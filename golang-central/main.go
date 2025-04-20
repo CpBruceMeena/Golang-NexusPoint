@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	pb "../proto"
+	pb "github.com/CpBruceMeena/golang-nexuspoint/proto"
 	"google.golang.org/grpc"
 )
 
