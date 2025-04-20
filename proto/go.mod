@@ -1,3 +1,3 @@
 module github.com/CpBruceMeena/golang-nexuspoint/proto
 
-go 1.21 
+go 1.22

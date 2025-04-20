@@ -1,7 +1,6 @@
-go 1.21
+go 1.22
 
 use (
 	./golang-central
 	./golang-grpc-app
-	./proto
 ) 
