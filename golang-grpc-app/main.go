@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/CpBruceMeena/golang-nexuspoint/proto"
+	pb "../../proto"
 	"google.golang.org/grpc"
 )
 
