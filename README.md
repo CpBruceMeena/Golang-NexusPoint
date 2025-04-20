@@ -27,7 +27,8 @@ graph TD
 │   └── proto/            # Generated protobuf files
 │
 └── proto/                # Shared Protocol Buffers definitions
-    └── proto/user.proto  # User service definition
+    ├── proto/user.proto  # User service definition
+    └── generate.sh       # Script to generate protobuf files
 ```
 
 ## Service Descriptions
@@ -37,22 +38,26 @@ graph TD
 - Provides both HTTP (/get-users) and gRPC endpoints
 - Serves static user data
 - Implements the UserService gRPC interface
+- Handles concurrent HTTP and gRPC requests
 
 ### golang-json-app (Port: 8081)
 - REST API client
 - Communicates with golang-central via HTTP
 - Provides a /users endpoint that proxies requests to golang-central
+- Returns user data in JSON format
 
 ### golang-grpc-app (Port: 50051)
 - gRPC client implementation
 - Communicates with golang-central via gRPC
 - Implements the same UserService interface
+- Demonstrates efficient binary communication
 
 ## Protocol Buffers
 The system uses Protocol Buffers for service definitions:
 - User service with GetUsers RPC method
 - Shared proto files ensure consistent data structures
 - Generated code handles serialization/deserialization
+- Proto files are automatically generated and copied to required locations
 
 ## Communication Flow
 1. Clients (golang-json-app or golang-grpc-app) request user data
@@ -65,6 +70,9 @@ The system uses Protocol Buffers for service definitions:
    ```bash
    cd proto && ./generate.sh
    ```
+   This will:
+   - Generate protobuf files
+   - Copy them to golang-central and golang-grpc-app directories
 
 2. Start the central service:
    ```bash
@@ -82,7 +90,22 @@ The system uses Protocol Buffers for service definitions:
    ```
 
 ## Dependencies
-- Go 1.22 or later
+- Go 1.21 or later
 - Protocol Buffers compiler (protoc)
 - google.golang.org/grpc
 - google.golang.org/protobuf
+
+## Current Features
+- ✅ HTTP and gRPC communication
+- ✅ Protocol Buffer definitions
+- ✅ Automatic proto file generation
+- ✅ Static user data serving
+- ✅ Concurrent request handling
+- ✅ JSON and binary data formats
+
+## Future Improvements
+- [ ] Add database integration
+- [ ] Implement user authentication
+- [ ] Add request logging
+- [ ] Implement rate limiting
+- [ ] Add health check endpoints

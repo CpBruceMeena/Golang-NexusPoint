@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "github.com/yourusername/golang-nexuspoint/golang-central/proto";
+option go_package = "github.com/CpBruceMeena/golang-nexuspoint/proto";
 
 // The User service definition
 service UserService {

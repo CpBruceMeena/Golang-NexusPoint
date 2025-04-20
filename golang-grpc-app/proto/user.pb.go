@@ -187,7 +187,7 @@ const file_proto_user_proto_rawDesc = "" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1a\n" +
 	"\blocation\x18\x04 \x01(\tR\blocation2J\n" +
 	"\vUserService\x12;\n" +
-	"\bGetUsers\x12\x15.user.GetUsersRequest\x1a\x16.user.GetUsersResponse\"\x00B@Z>github.com/yourusername/golang-nexuspoint/golang-central/protob\x06proto3"
+	"\bGetUsers\x12\x15.user.GetUsersRequest\x1a\x16.user.GetUsersResponse\"\x00B1Z/github.com/CpBruceMeena/golang-nexuspoint/protob\x06proto3"
 
 var (
 	file_proto_user_proto_rawDescOnce sync.Once
