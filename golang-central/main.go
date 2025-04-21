@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 
+	productv1 "github.com/CpBruceMeena/golang-nexuspoint/proto/gen/go/product/v1"
 	user_pb "github.com/CpBruceMeena/golang-nexuspoint/proto/gen/go/user/v1"
 
 	"google.golang.org/grpc"
@@ -115,6 +116,7 @@ func main() {
 		}
 		s := grpc.NewServer()
 		user_pb.RegisterUserServiceServer(s, &server{})
+		productv1.RegisterProductServiceServer(s, &productServer{})
 		log.Printf("gRPC server listening at %v", lis.Addr())
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
