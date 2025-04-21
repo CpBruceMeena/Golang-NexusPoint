@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package product.v1;
+
+option go_package = "github.com/CpBruceMeena/golang-nexuspoint/proto/gen/go/product/v1";
+
+// Product represents a product in the system
+message Product {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  float price = 4;
+  int32 stock = 5;
+}
+
+// GetProductsRequest is the request message for GetProducts
+message GetProductsRequest {
+  // Optional filters can be added here
+}
+
+// GetProductsResponse is the response message for GetProducts
+message GetProductsResponse {
+  repeated Product products = 1;
+}
+
+// GetProductRequest is the request message for GetProduct
+message GetProductRequest {
+  int32 product_id = 1;
+}
+
+// GetProductResponse is the response message for GetProduct
+message GetProductResponse {
+  Product product = 1;
+}
+
+// ProductService provides methods to manage products
+service ProductService {
+  // GetProducts returns a list of products
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse) {}
+  // GetProduct returns a single product by ID
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse) {}
+} 
