@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	pb "github.com/CpBruceMeena/golang-nexuspoint/golang-central/proto"
+	user_pb "github.com/CpBruceMeena/golang-nexuspoint/proto/gen/go/user/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -29,17 +29,17 @@ type User struct {
 
 // server is used to implement user.UserService
 type server struct {
-	pb.UnimplementedUserServiceServer
+	user_pb.UnimplementedUserServiceServer
 }
 
 // GetUsers implements user.UserService
-func (s *server) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
+func (s *server) GetUsers(ctx context.Context, req *user_pb.GetUsersRequest) (*user_pb.GetUsersResponse, error) {
 	users := getStaticUsers()
 
 	// Convert to gRPC format
-	grpcUsers := make([]*pb.User, len(users))
+	grpcUsers := make([]*user_pb.User, len(users))
 	for i, u := range users {
-		grpcUsers[i] = &pb.User{
+		grpcUsers[i] = &user_pb.User{
 			Id:       int32(u.ID),
 			Name:     u.Name,
 			Email:    u.Email,
@@ -47,13 +47,13 @@ func (s *server) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.Get
 		}
 	}
 
-	return &pb.GetUsersResponse{Users: grpcUsers}, nil
+	return &user_pb.GetUsersResponse{Users: grpcUsers}, nil
 }
 
 // GetProfile implements user.UserService
-func (s *server) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.GetProfileResponse, error) {
+func (s *server) GetProfile(ctx context.Context, req *user_pb.GetProfileRequest) (*user_pb.GetProfileResponse, error) {
 	// Static profile data
-	profiles := map[int32]*pb.Profile{
+	profiles := map[int32]*user_pb.Profile{
 		1: {
 			Id:      1,
 			Bio:     "Software Engineer with 5 years of experience",
@@ -82,7 +82,7 @@ func (s *server) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb
 		return nil, status.Errorf(codes.NotFound, "profile not found for user %d", req.UserId)
 	}
 
-	return &pb.GetProfileResponse{Profile: profile}, nil
+	return &user_pb.GetProfileResponse{Profile: profile}, nil
 }
 
 // getStaticUsers returns the static list of users
@@ -114,7 +114,7 @@ func main() {
 			log.Fatalf("failed to listen: %v", err)
 		}
 		s := grpc.NewServer()
-		pb.RegisterUserServiceServer(s, &server{})
+		user_pb.RegisterUserServiceServer(s, &server{})
 		log.Printf("gRPC server listening at %v", lis.Addr())
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)

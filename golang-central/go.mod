@@ -1,12 +1,13 @@
 module github.com/CpBruceMeena/golang-nexuspoint/golang-central
 
-go 1.22
+go 1.22.0
 
 toolchain go1.23.1
 
 require (
+	github.com/CpBruceMeena/golang-nexuspoint/proto v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.64.0
-	google.golang.org/protobuf v1.36.3
+	google.golang.org/protobuf v1.33.0
 )
 
 replace github.com/CpBruceMeena/golang-nexuspoint/proto => ../proto

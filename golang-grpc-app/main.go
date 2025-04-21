@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	pb "github.com/CpBruceMeena/golang-nexuspoint/golang-grpc-app/proto"
+	user_pb "github.com/CpBruceMeena/golang-nexuspoint/proto/gen/go/user/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	grpcClient pb.UserServiceClient
+	grpcClient user_pb.UserServiceClient
 )
 
 // User represents a user in JSON format
@@ -44,7 +44,7 @@ func initGrpcClient() error {
 	if err != nil {
 		return err
 	}
-	grpcClient = pb.NewUserServiceClient(conn)
+	grpcClient = user_pb.NewUserServiceClient(conn)
 	return nil
 }
 
@@ -56,7 +56,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make gRPC call
-	resp, err := grpcClient.GetUsers(context.Background(), &pb.GetUsersRequest{})
+	resp, err := grpcClient.GetUsers(context.Background(), &user_pb.GetUsersRequest{})
 	if err != nil {
 		log.Printf("Failed to get users: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -100,7 +100,7 @@ func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make gRPC call
-	resp, err := grpcClient.GetProfile(context.Background(), &pb.GetProfileRequest{UserId: int32(userID)})
+	resp, err := grpcClient.GetProfile(context.Background(), &user_pb.GetProfileRequest{UserId: int32(userID)})
 	if err != nil {
 		log.Printf("Failed to get profile: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

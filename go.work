@@ -1,6 +1,8 @@
-go 1.23.1
+go 1.22.0
 
 use (
+	.
 	./golang-central
 	./golang-grpc-app
+	./proto
 )
