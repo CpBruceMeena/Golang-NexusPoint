@@ -7,8 +7,9 @@ A microservices-based user management system demonstrating different communicati
 ```mermaid
 graph TD
     A[golang-json-app :8081] -->|HTTP| B[golang-central :8080]
-    C[golang-grpc-app :50051] -->|gRPC| B
-    B -->|Serves| D[User Data]
+    C[golang-grpc-app :8082] -->|HTTP| D[Client]
+    C -->|gRPC| B
+    B -->|Serves| E[User Data]
 ```
 
 ## Project Structure
@@ -22,8 +23,8 @@ graph TD
 ├── golang-json-app/        # REST API client
 │   └── main.go            # HTTP client implementation
 │
-├── golang-grpc-app/       # gRPC client
-│   ├── main.go           # gRPC client implementation
+├── golang-grpc-app/       # HTTP-to-gRPC bridge
+│   ├── main.go           # HTTP server with gRPC client
 │   └── proto/            # Generated protobuf files
 │
 └── proto/                # Shared Protocol Buffers definitions
@@ -46,11 +47,12 @@ graph TD
 - Provides a /users endpoint that proxies requests to golang-central
 - Returns user data in JSON format
 
-### golang-grpc-app (Port: 50051)
-- gRPC client implementation
-- Communicates with golang-central via gRPC
-- Implements the same UserService interface
-- Demonstrates efficient binary communication
+### golang-grpc-app (Port: 8082)
+- HTTP-to-gRPC bridge service
+- Provides HTTP endpoint (/users) for clients
+- Internally makes gRPC calls to golang-central
+- Converts gRPC responses to JSON format
+- Demonstrates protocol translation
 
 ## Protocol Buffers
 The system uses Protocol Buffers for service definitions:
@@ -60,10 +62,12 @@ The system uses Protocol Buffers for service definitions:
 - Proto files are automatically generated and copied to required locations
 
 ## Communication Flow
-1. Clients (golang-json-app or golang-grpc-app) request user data
+1. Clients can access user data through:
+   - HTTP: golang-json-app (port 8081)
+   - HTTP-to-gRPC: golang-grpc-app (port 8082)
 2. golang-central receives requests via HTTP or gRPC
 3. golang-central serves static user data
-4. Data is returned in JSON or Protocol Buffer format
+4. Data is returned in JSON format to clients
 
 ## Setup and Running
 1. Generate Protocol Buffer code:
@@ -84,9 +88,18 @@ The system uses Protocol Buffers for service definitions:
    cd golang-json-app && go run main.go
    ```
 
-4. Start the gRPC client:
+4. Start the HTTP-to-gRPC bridge:
    ```bash
    cd golang-grpc-app && go run main.go
+   ```
+
+5. Test the APIs:
+   ```bash
+   # Test HTTP endpoint
+   curl http://localhost:8081/users
+   
+   # Test HTTP-to-gRPC bridge
+   curl http://localhost:8082/users
    ```
 
 ## Dependencies
@@ -102,6 +115,7 @@ The system uses Protocol Buffers for service definitions:
 - ✅ Static user data serving
 - ✅ Concurrent request handling
 - ✅ JSON and binary data formats
+- ✅ HTTP-to-gRPC bridge functionality
 
 ## Future Improvements
 - [ ] Add database integration
