@@ -2,15 +2,92 @@
 
 A microservices-based user management system demonstrating different communication protocols in Go.
 
+## Production Deployment
+
+### Domain Structure
+```
+api.company.com              # Main API domain
+├── grpc.api.company.com     # gRPC endpoint (Port 50051)
+└── rest.api.company.com     # REST endpoint (Port 8080)
+```
+
+### Infrastructure Setup
+```mermaid
+graph TD
+    A[HTTP Clients] -->|rest.api.company.com| B[Application Load Balancer]
+    B -->|Port 8080| C[golang-central]
+    D[gRPC Clients] -->|grpc.api.company.com| E[Network Load Balancer]
+    E -->|Port 50051| C
+```
+
+### Client Configuration
+```yaml
+# Example client configuration
+services:
+  golang-central:
+    rest:
+      endpoint: "rest.api.company.com"
+      port: 443
+      protocol: "https"
+    grpc:
+      endpoint: "grpc.api.company.com"
+      port: 50051
+      protocol: "grpc"
+```
+
+## API Endpoints
+
+### golang-central Service
+
+#### REST API (rest.api.company.com)
+```http
+GET https://rest.api.company.com/get-users
+Content-Type: application/json
+
+Response:
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "location": "New York"
+  }
+]
+```
+
+#### gRPC API (grpc.api.company.com:50051)
+```protobuf
+service UserService {
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {}
+}
+```
+
+### When to Use Which API
+
+1. **Use REST API when**:
+   - You need simple, human-readable API calls
+   - You're working with web browsers or mobile apps
+   - You need easy debugging with tools like curl or Postman
+   - You're integrating with systems that don't support gRPC
+   - You need to use HTTP/1.1
+
+2. **Use gRPC API when**:
+   - You need high-performance communication
+   - You're working with microservices
+   - You need bi-directional streaming
+   - You want strong typing and code generation
+   - You need to use HTTP/2
+   - You're working with Go, Java, Python, or other gRPC-supported languages
+
 ## Architecture
 
 ```mermaid
 graph TD
-    A[golang-json-app :8081] -->|HTTP| B[golang-central :8080]
-    C[golang-grpc-app :8082] -->|HTTP| D[Client]
-    C -->|gRPC| B
-    B -->|Serves| E[User Data]
-    B -->|Serves| F[Profile Data]
+    A[HTTP Clients] -->|rest.api.company.com| B[golang-central]
+    C[gRPC Clients] -->|grpc.api.company.com| B
+    D[golang-json-app] -->|HTTP| B
+    E[golang-grpc-app] -->|gRPC| B
 ```
 
 ## Project Structure
@@ -41,6 +118,9 @@ graph TD
 - Serves static user and profile data
 - Implements the UserService gRPC interface
 - Handles concurrent HTTP and gRPC requests
+- Production endpoints:
+  - REST: rest.api.company.com
+  - gRPC: grpc.api.company.com:50051
 
 ### golang-json-app (Port: 8081)
 - REST API client
@@ -66,7 +146,8 @@ The system uses Protocol Buffers for service definitions:
 
 ## Communication Flow
 1. Clients can access data through:
-   - HTTP: golang-json-app (port 8081)
+   - HTTP: rest.api.company.com
+   - gRPC: grpc.api.company.com:50051
    - HTTP-to-gRPC: golang-grpc-app (port 8082)
 2. golang-central receives requests via HTTP or gRPC
 3. golang-central serves static user and profile data
@@ -98,11 +179,15 @@ The system uses Protocol Buffers for service definitions:
 
 5. Test the APIs:
    ```bash
-   # Test user endpoints
-   curl http://localhost:8081/users
-   curl http://localhost:8082/users
+   # Test REST API
+   curl https://rest.api.company.com/get-users
    
-   # Test profile endpoint
+   # Test gRPC API (using grpcurl)
+   grpcurl -plaintext grpc.api.company.com:50051 user.UserService/GetUsers
+   grpcurl -plaintext -d '{"user_id": 1}' grpc.api.company.com:50051 user.UserService/GetProfile
+   
+   # Test HTTP-to-gRPC bridge
+   curl http://localhost:8082/users
    curl "http://localhost:8082/profile?user_id=1"
    ```
 
@@ -130,3 +215,5 @@ The system uses Protocol Buffers for service definitions:
 - [ ] Implement rate limiting
 - [ ] Add health check endpoints
 - [ ] Add user creation/update endpoints
+- [ ] Add TLS/SSL configuration
+- [ ] Add API versioning
