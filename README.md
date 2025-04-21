@@ -15,6 +15,10 @@ A microservices-based application demonstrating gRPC and HTTP communication betw
 │   ├── main.go        # Client implementation
 │   └── go.mod         # Go module definition
 │
+├── golang-json-app/   # Simple HTTP Service
+│   ├── main.go        # HTTP server implementation
+│   └── go.mod         # Go module definition
+│
 └── proto/             # Centralized Protocol Buffers
     ├── user/          # User service definitions
     │   └── v1/
@@ -57,6 +61,10 @@ go run main.go
 # Terminal 2 - Start Client Service
 cd golang-grpc-app
 go run main.go
+
+# Terminal 3 - Start JSON Service
+cd golang-json-app
+go run main.go
 ```
 
 ## Services
@@ -85,6 +93,19 @@ go run main.go
   - GET /products: Returns list of products
   - GET /product?id=<id>: Returns product by ID
 
+### JSON Service (Simple HTTP Server)
+- Runs on port 8081
+- Demonstrates a simple HTTP-only microservice
+- Exposes HTTP endpoints:
+  - GET /users: Returns list of users in JSON format
+  - GET /profile?user_id=<id>: Returns user profile in JSON format
+- Features:
+  - Simple HTTP server implementation
+  - Direct JSON response handling
+  - No gRPC dependencies
+  - Easy to understand and modify
+  - Good starting point for new developers
+
 ## API Endpoints
 
 ### Central Service HTTP Endpoints
@@ -109,6 +130,15 @@ curl http://localhost:8082/products
 
 # Get product by ID
 curl http://localhost:8082/product?id=1
+```
+
+### JSON Service HTTP Endpoints
+```bash
+# Get all users
+curl http://localhost:8081/users
+
+# Get user profile
+curl http://localhost:8081/profile?user_id=1
 ```
 
 ## Adding a New Microservice
@@ -203,6 +233,7 @@ http.HandleFunc("/get-order", getOrderHandler)
    - Keep business logic separate from transport layer
    - Use proper error handling and status codes
    - Implement both gRPC and HTTP endpoints in golang-central
+   - For simple services, consider using golang-json-app as a template
 
 3. **Code Generation**:
    - Always run `./generate.sh` after modifying proto files
@@ -226,6 +257,7 @@ http.HandleFunc("/get-order", getOrderHandler)
    - Document all RPC methods and messages
    - Consider backward compatibility
    - Keep HTTP and gRPC APIs consistent
+   - For simple services, prefer HTTP for easier debugging
 
 2. **Error Handling**:
    - Use appropriate gRPC status codes
@@ -238,6 +270,7 @@ http.HandleFunc("/get-order", getOrderHandler)
    - Implement proper timeouts
    - Consider streaming for large datasets
    - Cache frequently accessed data
+   - For simple services, HTTP might be sufficient
 
 4. **Security**:
    - Validate all input data
