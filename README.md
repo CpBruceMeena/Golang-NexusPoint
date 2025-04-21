@@ -10,6 +10,7 @@ graph TD
     C[golang-grpc-app :8082] -->|HTTP| D[Client]
     C -->|gRPC| B
     B -->|Serves| E[User Data]
+    B -->|Serves| F[Profile Data]
 ```
 
 ## Project Structure
@@ -36,8 +37,8 @@ graph TD
 
 ### golang-central (Port: 8080, 50051)
 - Acts as the central service
-- Provides both HTTP (/get-users) and gRPC endpoints
-- Serves static user data
+- Provides both HTTP and gRPC endpoints
+- Serves static user and profile data
 - Implements the UserService gRPC interface
 - Handles concurrent HTTP and gRPC requests
 
@@ -49,24 +50,26 @@ graph TD
 
 ### golang-grpc-app (Port: 8082)
 - HTTP-to-gRPC bridge service
-- Provides HTTP endpoint (/users) for clients
-- Internally makes gRPC calls to golang-central
+- Provides HTTP endpoints for clients:
+  - `/users` - Get all users
+  - `/profile?user_id=<id>` - Get user profile
+- Uses optimized single gRPC client connection
 - Converts gRPC responses to JSON format
 - Demonstrates protocol translation
 
 ## Protocol Buffers
 The system uses Protocol Buffers for service definitions:
-- User service with GetUsers RPC method
+- User service with GetUsers and GetProfile RPC methods
 - Shared proto files ensure consistent data structures
 - Generated code handles serialization/deserialization
 - Proto files are automatically generated and copied to required locations
 
 ## Communication Flow
-1. Clients can access user data through:
+1. Clients can access data through:
    - HTTP: golang-json-app (port 8081)
    - HTTP-to-gRPC: golang-grpc-app (port 8082)
 2. golang-central receives requests via HTTP or gRPC
-3. golang-central serves static user data
+3. golang-central serves static user and profile data
 4. Data is returned in JSON format to clients
 
 ## Setup and Running
@@ -95,11 +98,12 @@ The system uses Protocol Buffers for service definitions:
 
 5. Test the APIs:
    ```bash
-   # Test HTTP endpoint
+   # Test user endpoints
    curl http://localhost:8081/users
-   
-   # Test HTTP-to-gRPC bridge
    curl http://localhost:8082/users
+   
+   # Test profile endpoint
+   curl "http://localhost:8082/profile?user_id=1"
    ```
 
 ## Dependencies
@@ -112,10 +116,12 @@ The system uses Protocol Buffers for service definitions:
 - ✅ HTTP and gRPC communication
 - ✅ Protocol Buffer definitions
 - ✅ Automatic proto file generation
-- ✅ Static user data serving
+- ✅ Static user and profile data serving
 - ✅ Concurrent request handling
 - ✅ JSON and binary data formats
 - ✅ HTTP-to-gRPC bridge functionality
+- ✅ Optimized gRPC client connection
+- ✅ Profile management
 
 ## Future Improvements
 - [ ] Add database integration
@@ -123,3 +129,4 @@ The system uses Protocol Buffers for service definitions:
 - [ ] Add request logging
 - [ ] Implement rate limiting
 - [ ] Add health check endpoints
+- [ ] Add user creation/update endpoints

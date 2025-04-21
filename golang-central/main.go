@@ -10,6 +10,8 @@ import (
 	pb "github.com/CpBruceMeena/golang-nexuspoint/golang-central/proto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -46,6 +48,41 @@ func (s *server) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.Get
 	}
 
 	return &pb.GetUsersResponse{Users: grpcUsers}, nil
+}
+
+// GetProfile implements user.UserService
+func (s *server) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.GetProfileResponse, error) {
+	// Static profile data
+	profiles := map[int32]*pb.Profile{
+		1: {
+			Id:      1,
+			Bio:     "Software Engineer with 5 years of experience",
+			Website: "https://johndoe.com",
+			Company: "Tech Corp",
+			Role:    "Senior Developer",
+		},
+		2: {
+			Id:      2,
+			Bio:     "Product Manager passionate about user experience",
+			Website: "https://janesmith.com",
+			Company: "Innovate Inc",
+			Role:    "Product Lead",
+		},
+		3: {
+			Id:      3,
+			Bio:     "DevOps Engineer specializing in cloud infrastructure",
+			Website: "https://bobjohnson.com",
+			Company: "Cloud Solutions",
+			Role:    "DevOps Lead",
+		},
+	}
+
+	profile, exists := profiles[req.UserId]
+	if !exists {
+		return nil, status.Errorf(codes.NotFound, "profile not found for user %d", req.UserId)
+	}
+
+	return &pb.GetProfileResponse{Profile: profile}, nil
 }
 
 // getStaticUsers returns the static list of users
