@@ -2,28 +2,48 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "github.com/CpBruceMeena/golang-nexuspoint/proto";
+option go_package = "github.com/CpBruceMeena/golang-nexuspoint/proto/proto";
 
-// The User service definition
-service UserService {
-  // GetUsers returns a list of users
-  rpc GetUsers (GetUsersRequest) returns (GetUsersResponse) {}
-}
-
-// Request message for GetUsers
-message GetUsersRequest {
-  // No parameters needed for now
-}
-
-// Response message for GetUsers
-message GetUsersResponse {
-  repeated User users = 1;
-}
-
-// User message definition
+// User represents a user in the system
 message User {
   int32 id = 1;
   string name = 2;
   string email = 3;
   string location = 4;
+}
+
+// Profile represents a user's profile
+message Profile {
+  int32 id = 1;
+  string bio = 2;
+  string website = 3;
+  string company = 4;
+  string role = 5;
+}
+
+// Request message for getting users
+message GetUsersRequest {}
+
+// Response message containing users
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+// Request message for getting profile
+message GetProfileRequest {
+  int32 user_id = 1;
+}
+
+// Response message containing profile
+message GetProfileResponse {
+  Profile profile = 1;
+}
+
+// UserService definition
+service UserService {
+  // GetUsers returns a list of users
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+  
+  // GetProfile returns a user's profile
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {}
 } 
